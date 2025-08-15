@@ -2,11 +2,7 @@
 
 A **web-based DNA sequence matcher** that uses the **Knuth–Morris–Pratt (KMP)** algorithm to efficiently find patterns within DNA strings. Built with **HTML**, **CSS**, and **JavaScript**, this tool offers fast, accurate matching via a simple and intuitive interface—ideal for educational use or entry-level bioinformatics analysis.
 
----
 
-##  Demo
-
-*(Optional: Include a screenshot or GIF illustrating the user interface and matching results here.)*
 
 ---
 
