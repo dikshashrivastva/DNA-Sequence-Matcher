@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DNA Matcher with KMP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      padding: 30px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #2c3e50;
+    }
+
+    input[type="file"],
+    input[type="text"] {
+      padding: 10px;
+      margin: 10px;
+      width: 60%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    #resultBox {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+      padding: 15px;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: inline-block;
+      min-width: 300px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>DNA Sequence Matcher (KMP Algorithm)</h2>
+
+  <input type="file" id="fileInput"><br><br>
+  <input type="text" id="patternInput" placeholder="Enter DNA pattern"><br><br>
+  <button onclick="handleMatch()">Search</button>
+
+  <h3>Result:</h3>
+  <div id="resultBox"></div>
+
+  <script>
+    function buildLPS(pattern) {
+      const lps = Array(pattern.length).fill(0);
+      let len = 0, i = 1;
+
+      while (i < pattern.length) {
+        if (pattern[i] === pattern[len]) {
+          len++;
+          lps[i] = len;
+          i++;
+        } else {
+          if (len !== 0) {
+            len = lps[len - 1];
+          } else {
+            lps[i] = 0;
+            i++;
+          }
+        }
+      }
+      return lps;
+    }
+
+    function KMPSearch(text, pattern) {
+      const lps = buildLPS(pattern);
+      const matches = [];
+      let i = 0, j = 0;
+
+      while (i < text.length) {
+        if (pattern[j] === text[i]) {
+          i++;
+          j++;
+        }
+
+        if (j === pattern.length) {
+          matches.push(i - j);
+          j = lps[j - 1];
+        } else if (i < text.length && pattern[j] !== text[i]) {
+          if (j !== 0) {
+            j = lps[j - 1];
+          } else {
+            i++;
+          }
+        }
+      }
+      return matches;
+    }
+
+    function handleMatch() {
+      const fileInput = document.getElementById('fileInput');
+      const pattern = document.getElementById('patternInput').value.toUpperCase();
+      const resultBox = document.getElementById('resultBox');
+
+      if (!fileInput.files.length || pattern === "") {
+        resultBox.innerHTML = "⚠️ Please select a file and enter a DNA pattern.";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const text = event.target.result.replace(/\s/g, '').toUpperCase();
+        const matches = KMPSearch(text, pattern);
+
+        if (matches.length > 0) {
+          resultBox.innerHTML = ` Match found at position(s): ${matches.join(', ')}`;
+        } else {
+          resultBox.innerHTML = " No match found.";
+        }
+      };
+
+      reader.readAsText(fileInput.files[0]);
+    }
+  </script>
+
+</body>
+</html>
